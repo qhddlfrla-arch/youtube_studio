@@ -18,6 +18,7 @@ const INITIAL_CHARACTERS: CharacterProfile[] = [
 
 const App: React.FC = () => {
   const [apiKey, setApiKey] = useState<string>('');
+  const [apiKeySaved, setApiKeySaved] = useState<boolean>(false);
   const [script, setScript] = useState<string>('');
   const [isRefining, setIsRefining] = useState<boolean>(false);
   const [scenes, setScenes] = useState<Scene[]>([]);
@@ -254,10 +255,20 @@ const App: React.FC = () => {
           id="api-key-input"
           type="password"
           value={apiKey}
-          onChange={e => setApiKey(e.target.value)}
+          onChange={e => {
+            setApiKey(e.target.value);
+            setApiKeySaved(false);
+          }}
           className="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-white text-xs w-80 focus:ring-2 focus:ring-[#DFFF00] outline-none"
           placeholder="API 키를 입력하세요"
         />
+        <button
+          onClick={() => setApiKeySaved(true)}
+          className="ml-2 px-4 py-2 bg-[#DFFF00] text-black text-xs font-bold rounded hover:bg-yellow-300 transition-all"
+        >확인</button>
+        {apiKeySaved && (
+          <span className="ml-4 text-emerald-400 text-xs font-bold">API 키가 저장되었습니다</span>
+        )}
       </div>
       <Header currentStep={activeStep} onStepClick={setActiveStep} />
       <main className="flex-1 flex overflow-hidden">
