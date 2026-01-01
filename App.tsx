@@ -17,6 +17,7 @@ const INITIAL_CHARACTERS: CharacterProfile[] = [
 ];
 
 const App: React.FC = () => {
+  const [apiKey, setApiKey] = useState<string>('');
   const [script, setScript] = useState<string>('');
   const [isRefining, setIsRefining] = useState<boolean>(false);
   const [scenes, setScenes] = useState<Scene[]>([]);
@@ -246,8 +247,19 @@ const App: React.FC = () => {
 
   return (
     <div className="h-screen flex flex-col bg-[#0f172a] text-slate-200 overflow-hidden font-sans">
+      {/* API 키 입력란 */}
+      <div className="w-full bg-[#1e293b] p-4 flex items-center gap-4 border-b border-slate-800">
+        <label htmlFor="api-key-input" className="text-xs font-bold text-slate-400">API Key</label>
+        <input
+          id="api-key-input"
+          type="password"
+          value={apiKey}
+          onChange={e => setApiKey(e.target.value)}
+          className="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-white text-xs w-80 focus:ring-2 focus:ring-[#DFFF00] outline-none"
+          placeholder="API 키를 입력하세요"
+        />
+      </div>
       <Header currentStep={activeStep} onStepClick={setActiveStep} />
-      
       <main className="flex-1 flex overflow-hidden">
         {(activeStep === 3 || activeStep === 4) && (
           <aside className="w-80 bg-[#1e293b] border-r border-slate-800 p-6 flex flex-col gap-6 overflow-y-auto custom-scrollbar no-print">
