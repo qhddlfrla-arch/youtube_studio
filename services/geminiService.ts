@@ -2,8 +2,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Scene, VisualStyle, CharacterProfile } from "../types";
 
-export const refineScriptForYoutube = async (script: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const refineScriptForYoutube = async (script: string, apiKey: string): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `당신은 베테랑 유튜브 크리에이터이자 정책 전문가입니다. 
@@ -14,8 +14,8 @@ export const refineScriptForYoutube = async (script: string): Promise<string> =>
   return response.text || script;
 };
 
-export const analyzeScript = async (script: string): Promise<Scene[]> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const analyzeScript = async (script: string, apiKey: string): Promise<Scene[]> => {
+  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: `당신은 세계 최고의 영화 연출가이자 스토리보드 작가입니다. 주어진 대본을 바탕으로 "문장 단위"의 초고밀도 스토리보드를 구성하세요.
@@ -61,8 +61,8 @@ export const analyzeScript = async (script: string): Promise<Scene[]> => {
   return JSON.parse(response.text.trim()) as Scene[];
 };
 
-export const generateCharacterImage = async (profile: CharacterProfile, style: VisualStyle): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const generateCharacterImage = async (profile: CharacterProfile, style: VisualStyle, apiKey: string): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey });
   const styleStr = style === 'Default' ? "Modern digital photography look, 2000s high-definition cinematic lighting, sharp focus, neutral colors" : style;
   const prompt = `${styleStr}. A centered high-quality portrait of ${profile.name}: ${profile.description}. Extremely detailed facial features, realistic skin texture, 8k resolution.`;
 
@@ -80,8 +80,8 @@ export const generateCharacterImage = async (profile: CharacterProfile, style: V
   throw new Error("Character image failed");
 };
 
-export const generateSceneImage = async (prompt: string, style: VisualStyle, characters: CharacterProfile[]): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const generateSceneImage = async (prompt: string, style: VisualStyle, characters: CharacterProfile[], apiKey: string): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey });
   
   // 캐릭터 일관성 강화를 위한 상세 묘사 결합
   let characterReferences = characters.map(char => 
@@ -118,8 +118,8 @@ export const generateSceneImage = async (prompt: string, style: VisualStyle, cha
   throw new Error("Scene image failed");
 };
 
-export const generateSceneVideo = async (prompt: string, imageBase64?: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const generateSceneVideo = async (prompt: string, apiKey: string, imageBase64?: string): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey });
   const options: any = {
     model: 'veo-3.1-fast-generate-preview',
     prompt: `Modern cinematic motion: ${prompt}`,
@@ -133,5 +133,5 @@ export const generateSceneVideo = async (prompt: string, imageBase64?: string): 
     await new Promise(resolve => setTimeout(resolve, 10000));
     operation = await ai.operations.getVideosOperation({ operation });
   }
-  return `${operation.response?.generatedVideos?.[0]?.video?.uri}&key=${process.env.API_KEY}`;
+  return `${operation.response?.generatedVideos?.[0]?.video?.uri}&key=${apiKey}`;
 };

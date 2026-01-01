@@ -173,20 +173,20 @@ const App: React.FC = () => {
   };
 
   const handleRefineScript = async () => {
-    if (!script.trim()) return;
+    if (!script.trim() || !apiKey) return alert("API 키를 입력하세요.");
     setIsRefining(true);
     try {
-      const refined = await refineScriptForYoutube(script);
+      const refined = await refineScriptForYoutube(script, apiKey);
       setScript(refined);
       alert("대본 최적화 완료!");
     } catch (err: any) { alert(err.message); } finally { setIsRefining(false); }
   };
 
   const handleAnalyze = async () => {
-    if (!script.trim()) return;
+    if (!script.trim() || !apiKey) return alert("API 키를 입력하세요.");
     setStatus(AppStatus.ANALYZING);
     try {
-      const analyzedScenes = await analyzeScript(script);
+      const analyzedScenes = await analyzeScript(script, apiKey);
       setScenes(analyzedScenes);
       setSelectedScenes(new Set(analyzedScenes.map(s => s.sceneNumber)));
       setActiveStep(2);
@@ -194,11 +194,12 @@ const App: React.FC = () => {
   };
 
   const handleGenerateCharacter = async (id: string) => {
+    if (!apiKey) return alert("API 키를 입력하세요.");
     const profile = characterProfiles.find(p => p.id === id);
     if (!profile) return;
     setCharacterProfiles(prev => prev.map(p => p.id === id ? { ...p, isGenerating: true } : p));
     try {
-      const img = await generateCharacterImage(profile, selectedStyle);
+      const img = await generateCharacterImage(profile, selectedStyle, apiKey);
       setCharacterProfiles(prev => prev.map(p => p.id === id ? { ...p, imageUrl: img, isGenerating: false } : p));
     } catch (err: any) {
       setCharacterProfiles(prev => prev.map(p => p.id === id ? { ...p, isGenerating: false } : p));
@@ -214,11 +215,12 @@ const App: React.FC = () => {
   };
 
   const handleGenerateImage = async (sceneNumber: number) => {
+    if (!apiKey) return alert("API 키를 입력하세요.");
     setGeneratingSceneIds(prev => new Set(prev).add(sceneNumber));
     try {
       const scene = scenes.find(s => s.sceneNumber === sceneNumber);
       if (!scene) return;
-      const img = await generateSceneImage(scene.visualPrompt, selectedStyle, characterProfiles);
+      const img = await generateSceneImage(scene.visualPrompt, selectedStyle, characterProfiles, apiKey);
       setScenes(prev => prev.map(s => s.sceneNumber === sceneNumber ? { ...s, generatedImageUrl: img } : s));
     } catch (err: any) { console.error(err); } finally {
       setGeneratingSceneIds(prev => {
@@ -243,7 +245,9 @@ const App: React.FC = () => {
   };
 
   const handleGenerateVideo = async (sceneNumber: number) => {
+    if (!apiKey) return alert("API 키를 입력하세요.");
     alert("현재 이미지 기반 영상 생성 모듈을 준비 중입니다.");
+    // 예시: await generateSceneVideo(prompt, apiKey, imageBase64);
   };
 
   return (
